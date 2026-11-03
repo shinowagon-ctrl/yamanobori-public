@@ -106,6 +106,13 @@ html,body{position:fixed;inset:0;width:100%;overscroll-behavior:none;-webkit-tou
 @media (max-width:600px){#walk{left:calc(20px + env(safe-area-inset-left))!important;transform:none!important;bottom:calc(156px + env(safe-area-inset-bottom))!important}#dash{left:calc(20px + env(safe-area-inset-left));bottom:calc(218px + env(safe-area-inset-bottom));font-size:18px;padding:10px 14px}}
 @media (max-height:500px){#dash{left:calc(150px + env(safe-area-inset-left));bottom:calc(92px + env(safe-area-inset-bottom));font-size:18px;padding:10px 14px}}
 body.fishing #joy,body.fishing #walk,body.fishing #dash{display:none!important}
+#joy,#knob,#dash{touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+#joy.edge{border-color:#ff8a5c;box-shadow:0 0 0 6px rgba(255,138,92,.45),0 0 22px rgba(255,138,92,.8)}#joy.edge #knob{background:#ff8a5c}
+#joy .jl{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-size:13px;font-weight:bold;color:#fff;text-shadow:0 2px 4px #000;pointer-events:none;opacity:0;transition:opacity .2s}#joy.edge .jl{opacity:1}
+#dash .dl{display:block;font-size:.75em}
+@media (pointer:coarse){#dash{left:auto!important;right:calc(14px + env(safe-area-inset-right))!important;bottom:calc(46% + env(safe-area-inset-bottom))!important;width:104px;height:104px;border-radius:50%;padding:0!important;font-size:34px!important;line-height:1.05;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+ #dash .dl{font-size:15px}}
+@media (pointer:coarse) and (max-height:500px){#dash{right:auto!important;left:calc(50% + 70px)!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;width:88px;height:88px;font-size:28px!important}}
 #fishui{z-index:60}
 html,body,canvas,div{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M4 4 L4 52 L17 40 L27 60 L36 56 L26 36 L44 36 Z' fill='%23ffe14d' stroke='%23000' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E") 4 4,auto!important}
 button,#mini,.act,#agrid img{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M22 6 q6-4 9 2 v20 l3-1 q5-2 7 2 l3-1 q5-1 6 3 l3 0 q5 1 5 6 v12 q0 12-14 15 h-12 q-10-1-15-10 l-8-14 q-2-6 4-7 q3 0 6 4 l3 4 V8 z' fill='%23ffb0d0' stroke='%23000' stroke-width='3.5' stroke-linejoin='round'/%3E%3C/svg%3E") 22 6,pointer!important}
@@ -136,7 +143,7 @@ body.ontrain #joy,body.ontrain #walk,body.ontrain #dash{display:none!important}
 <div id="topr"><button class="sb" id="qbtn">きれいさ</button><button class="sb" id="mapbtn">🗺️ ちず</button><button class="sb" id="albbtn">📒 アルバム</button><button class="sb" id="shotbtn">📸 とる</button><button class="sb" id="mbtn">🔊</button><button class="sb" id="nbtn">🔔 ヒント</button></div>
 <canvas id="mini" width="360" height="360"></canvas><div id="neartxt"></div>
 <div id="joy"><div id="knob"></div></div>
-<button id="walk">🚶 あるく</button><button id="dash">🏃 ダッシュ</button>
+<button id="walk">🚶 あるく</button><button id="dash">🏃<span class="dl">ダッシュ</span></button>
 <div id="nearbtns"><button class="act" id="pet">なでなで<br>💗</button><button class="act" id="give">おさかなを あげる 🐟</button></div><div id="cring"></div><div id="introui"><div class="bar" style="top:0"></div><div class="bar" style="bottom:0"></div><div class="t" id="introt">🏔️ ねこと けしきの ハイキング 🚂</div><button id="skip">スキップ ▶</button></div>
 <div id="acts"><button class="act" id="board">🚂 きしゃに のる</button><button class="act" id="ride">🐴 うまに のる</button><button class="act" id="fishbtn">🎣 つりを する</button><button class="act" id="photo">📷 けしき</button></div>
 <div id="fishui"><div id="fishtxt">うきを みててね…</div><div id="bar"><div id="zone"></div><div id="marker"></div></div><div class="row"><button id="strike">いまだ！</button><button id="quit">やめる</button></div></div>
@@ -890,17 +897,17 @@ cv.addEventListener('pointerdown',e=>{drag={id:e.pointerId,x:e.clientX,y:e.clien
 addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;const ks=e.pointerType==='touch'?Math.max(1,700/Math.min(innerWidth,innerHeight)):1;player.yaw-=(e.clientX-drag.x)*.005*ks;player.pitch=THREE.MathUtils.clamp(player.pitch-(e.clientY-drag.y)*.004*ks,-.8,.7);drag.x=e.clientX;drag.y=e.clientY;player.look=0;});
 addEventListener('pointerup',e=>{if(drag&&drag.id===e.pointerId){if(Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)<8)tapAt(e.clientX,e.clientY);drag=null;}});
 addEventListener('pointermove',e=>{if(e.pointerType==='mouse'){const c=$('cring');c.style.transform=`translate(${e.clientX}px,${e.clientY}px)`;}},{passive:true});
-const joy={x:0,y:0,id:null};const jel=$('joy'),knob=$('knob');
+const joy={x:0,y:0,id:null,edge:false};jel_add:{const l=document.createElement('div');l.className='jl';l.textContent='🏃 ダッシュ！';document.getElementById('joy').appendChild(l);}const jel=$('joy'),knob=$('knob');
 jel.addEventListener('pointerdown',e=>{e.stopPropagation();joy.id=e.pointerId;jel.setPointerCapture(e.pointerId);moveJoy(e);});
 jel.addEventListener('pointermove',e=>{if(joy.id===e.pointerId)moveJoy(e);});
-const endJoy=()=>{joy.id=null;joy.x=joy.y=0;knob.style.transform='';};jel.addEventListener('pointerup',endJoy);jel.addEventListener('pointercancel',endJoy);
-function moveJoy(e){const r=jel.getBoundingClientRect();let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);const d=Math.hypot(dx,dy),m=r.width*.37;if(d>m){dx*=m/d;dy*=m/d;}joy.x=dx/m;joy.y=dy/m;knob.style.transform=`translate(${dx}px,${dy}px)`;}
+const endJoy=e=>{if(e&&joy.id!==null&&e.pointerId!==joy.id)return;joy.id=null;joy.x=joy.y=0;joy.edge=false;jel.classList.remove('edge');knob.style.transform='';};['pointerup','pointercancel','lostpointercapture'].forEach(ev=>jel.addEventListener(ev,endJoy));
+function moveJoy(e){const r=jel.getBoundingClientRect();let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);const d=Math.hypot(dx,dy),m=r.width*.37;if(d>m){dx*=m/d;dy*=m/d;}joy.x=dx/m;joy.y=dy/m;joy.edge=d>m*1.05;jel.classList.toggle('edge',joy.edge);knob.style.transform=`translate(${dx}px,${dy}px)`;}
 const ray=new THREE.Raycaster();
 function tapAt(cx,cy){ray.setFromCamera(new THREE.Vector2(cx/innerWidth*2-1,-cy/innerHeight*2+1),camera);
  for(const c of cats.concat(friends,animals)){if(c!==ridingH&&dist(c)<(c.rad||3.6)+4&&ray.intersectObject(c.g,true).length){petChar(c,cx,cy);return;}}
  for(const o of storksStand){if(ray.intersectObject(o.g,true).length){if(o.seen){clatter(.4);say('コウノトリ：カタカタカタ…♪ 🪶');}else seeStork(o);return;}}}
-{let t0=0;const b=$('dash');b.addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();dashHold=true;t0=performance.now();try{b.setPointerCapture(e.pointerId)}catch(_){}});
- const up=e=>{if(!dashHold)return;dashHold=false;if(autoWalk&&performance.now()-t0<350)dashLock=!dashLock;};['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,up));}
+{let t0=0;const b=$('dash');b.addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();dashLock=!dashLock;try{b.setPointerCapture(e.pointerId)}catch(_){}});
+ const up=e=>{};b.addEventListener('contextmenu',e=>e.preventDefault());jel.addEventListener('contextmenu',e=>e.preventDefault());['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,up));}
 $('walk').addEventListener('pointerdown',e=>{e.stopPropagation();autoWalk=!autoWalk;$('walk').classList.toggle('on',autoWalk);$('walk').textContent=autoWalk?'⏸ とまる':'🚶 あるく';});
 $('pet').addEventListener('pointerdown',e=>{e.stopPropagation();const c=nearest();if(c)petChar(c);});
 $('board').addEventListener('pointerdown',e=>{e.stopPropagation();audio();boardTrain();});
@@ -1352,7 +1359,7 @@ function tick(){
  player.yaw+=turn*dt;if(Math.abs(turn)>.01)player.look=0;
  if(G.fishing){if(f||r)stopFishing();}
  player.lockT=(G.fishing?1e9:Math.min(5,(player.lockT||0))-dt);
- dashOn=!!(keys.ShiftLeft||keys.ShiftRight||dashHold||(autoWalk&&dashLock))&&(Math.abs(f)>.05||Math.abs(r)>.05);
+ dashOn=!!(keys.ShiftLeft||keys.ShiftRight||dashHold||dashLock||joy.edge)&&(Math.abs(f)>.05||Math.abs(r)>.05);
  if(!G.fishing&&!G.onTrain)moveFree(f,r,dt);trainPush();
  const moving=Math.abs(f)>.05||Math.abs(r)>.05;player.moving=moving;
  player.look+=dt;
@@ -1363,7 +1370,7 @@ function tick(){
  let gy=Math.max(hAt(player.x,player.z),onPlatform(player.x,player.z));{const sd=STR.d(player.x,player.z);if(sd<3.6)gy=Math.max(gy,Math.abs(player.lat)<.9?STR.wy+.1:STR.wy-.25);}if(Math.abs(player.s-S.bridge)<7&&player.trailD<1.3)gy=Math.max(gy,TH[Math.round(S.bridge/DS)]+.15-.25*(1-((player.s-S.bridge)/6)**2));
  {let ey=gy+(ridingH?2.45:1.45);for(const k of[.8,1.6]){const ax=player.x-Math.sin(player.yaw)*k,az=player.z-Math.cos(player.yaw)*k;ey=Math.max(ey,hAt(ax,az)+1.0);}window.__eyeY=(window.__eyeY==null||Math.abs(window.__eyeY-ey)>4)?ey:window.__eyeY+(ey-window.__eyeY)*Math.min(1,dt*8);window.__eyeY=Math.max(window.__eyeY,gy+(ridingH?2.1:1.1));}camera.position.set(player.x,window.__eyeY+(moving?Math.sin(t*(dashOn?13:8))*(dashOn?.06:.035):0),player.z);camera.rotation.set(player.pitch,player.yaw,0,'YXZ');
  {const fk=dashOn?7:0;if(Math.abs(fk-fovK)>.01){fovK+=(fk-fovK)*Math.min(1,dt*6);camera.fov=FOVB+fovK;camera.updateProjectionMatrix();}
-  $('dash').classList.toggle('on',dashOn||(autoWalk&&dashLock));
+  $('dash').classList.toggle('on',dashOn||dashLock);$('dash').querySelector('.dl').textContent=dashLock?'ダッシュ ON':'ダッシュ';
   if(moving&&!G.fishing){stepT-=dt;if(stepT<=0){if(ridingH){stepT=dashOn?.22:.3;hoof();}else{stepT=dashOn?.27:.5;footstep(dashOn);}}}else stepT=0;}
  // golden hour
  const pr=player.s/TL;setSun(55-45*pr,35+75*pr);dl.color.copy(SUNC0).lerp(SUNC1,sstep(.4,1,pr));dl.intensity=2.6-pr*.7;scene.fog.color.copy(FOG0).lerp(FOG1,sstep(.45,1,pr)*.6);scene.fog.near=600+pr*400;scene.fog.far=7000+pr*3000;renderer.toneMappingExposure=.85-sstep(.5,1,pr)*.25;hemi.intensity=.55-pr*.15;
@@ -1411,5 +1418,5 @@ function tick(){
  if(snapReq&&player.lockT<2.3){const s=snapReq;snapReq=null;snap(s);}
  requestAnimationFrame(tick);}
 setupChars();applyQuality();updPos();tick();
-window.__game={storksStand,storksFly,TRK,TS,STATIONS,uVia,trainCheck,boardTrain,canBoard,loco,CONSIST,skipIntro(){if(G.intro)G.intro.t=99;},viewViaduct(){const c=trkAt(uVia);let sd=1;if(gridH(c.x+c.rx*50,c.z+c.rz*50)>gridH(c.x-c.rx*50,c.z-c.rz*50))sd=-1;TS.u=uVia+8;TS.v=4;TS.wait=0;TS.next=2;window.__camO={p:new THREE.Vector3(c.x+c.rx*sd*42-c.tx*18,c.y+6,c.z+c.rz*sd*42-c.tz*18),t:new THREE.Vector3(c.x,c.y-4,c.z)};},RIVER,riverY,gridH,TX,TZ,TH,animals,FSPOTS,AREAS,toggleRide,get riding(){return ridingH},gallery,openAlbum,syncS,allowed,tp(s,lat){player.s=s;player.lat=lat||0;updPos();},nearFSpot,get friends2(){return friends},place,player,cats,friends,G,S,TL,SPOTS,startFishing,strike,giveFish,toggleMap,takePhoto,get fish(){return fishInv},album,trailAt,camera,setFish(n){fishInv=n;updHud();},storksStand,storksFly,get storksSeen(){return storksSeen},catches,bag,STR,FISH,scene,renderer,CHALET,setDash(v){dashHold=v;},get dashOn(){return dashOn},get fov(){return camera.fov}};window.__ready=true;if(renderer.compileAsync)setTimeout(()=>renderer.compileAsync(scene,camera).catch(()=>{}),50);
+window.__game={storksStand,storksFly,TRK,TS,STATIONS,uVia,trainCheck,boardTrain,canBoard,loco,CONSIST,skipIntro(){if(G.intro)G.intro.t=99;},viewViaduct(){const c=trkAt(uVia);let sd=1;if(gridH(c.x+c.rx*50,c.z+c.rz*50)>gridH(c.x-c.rx*50,c.z-c.rz*50))sd=-1;TS.u=uVia+8;TS.v=4;TS.wait=0;TS.next=2;window.__camO={p:new THREE.Vector3(c.x+c.rx*sd*42-c.tx*18,c.y+6,c.z+c.rz*sd*42-c.tz*18),t:new THREE.Vector3(c.x,c.y-4,c.z)};},RIVER,riverY,gridH,TX,TZ,TH,animals,FSPOTS,AREAS,toggleRide,get riding(){return ridingH},gallery,openAlbum,syncS,allowed,tp(s,lat){player.s=s;player.lat=lat||0;updPos();},nearFSpot,get friends2(){return friends},place,player,cats,friends,G,S,TL,SPOTS,startFishing,strike,giveFish,toggleMap,takePhoto,get fish(){return fishInv},album,trailAt,camera,setFish(n){fishInv=n;updHud();},storksStand,storksFly,get storksSeen(){return storksSeen},catches,bag,STR,FISH,scene,renderer,CHALET,setDash(v){dashHold=v;},get dashOn(){return dashOn},get dashLockV(){return dashLock},get fov(){return camera.fov}};window.__ready=true;if(renderer.compileAsync)setTimeout(()=>renderer.compileAsync(scene,camera).catch(()=>{}),50);
 </script></body></html>
